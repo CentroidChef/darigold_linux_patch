@@ -11,5 +11,5 @@ This cookbook is used as a proof of concept for patching Linux.
 3) Patch Linux OS
 4) Reboot Server
 5) Verify Patch was Successful
-   -if failed) Rollback yum patch and reboot
-   -if success) Exit process
+- if failed) Rollback yum patch and reboot
+- success) Exit process
