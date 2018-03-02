@@ -4,27 +4,96 @@
 #
 # Copyright:: 2018, The Authors, All Rights Reserved.
 
-# Shutdown software services.
-include_recipe 'darigold_linux_patch::_shutdown_services'
+# TODO: Determine OS Version
 
-# Determine OS Version
+# Execute shutdown script as applmgr
+execute 'shutdown service' do
+  command '/home/applmgr/stopapp.ssl.sh'
+  user 'applmgr'
+  ignore_failure true
+end
 
-# Store current OS Level information into log file prior to patching.
-# uname -a | tee -a os_level_before_2018Q1_patching
-# cat /etc/system-release | tee -a os_level_before_2018Q1_patching
+# TODO: Utilize proper exit codes for script above.
 
-# Update the yum.repo file with the latest (create backup file)
-# /etc/yum.repos.d/yum.repo
+# Create patching log directory
+directory '/patch_logs' do
+  owner 'root'
+  group 'root'
+  mode '0755'
+  action :create
+end
 
-# Clear out yum cache
-# yum clean all
+# Log current server state - before patching.
+bash 'uname' do
+  user 'root'
+  cwd '/patch_logs'
+  code <<-EOH
+  uname -a | tee -a os_level_before_2018Q1_patching
+  EOH
+end
 
-# Check update file
-# yum check-update
+bash 'system-release' do
+  user 'root'
+  cwd '/patch_logs'
+  code <<-EOH
+  cat /etc/system-release | tee -a os_level_before_2018Q1_patching
+  EOH
+end
 
-# Execute update of patching
-# yum update --exclude=kexec-tools* --exclude=system-config-kdump*
+# Yum clean all
+bash 'yum_clean_all' do
+  user 'root'
+  code <<-EOH
+  yum clean all
+  EOH
+end
 
-# Reboot Server
+# Yum repolist
+bash 'yum_repolist' do
+  user 'root'
+  code <<-EOH
+  yum repolist
+  EOH
+end
 
-# Verify update
+# Yum update
+bash 'yum_update' do
+  user 'root'
+  code <<-EOH
+  yum update -y --exclude=kexec-tools* --exclude=system-config-kdump*
+  EOH
+end
+
+# Log post update
+bash 'system-release' do
+  user 'root'
+  cwd '/patch_logs'
+  code <<-EOH
+  echo 'PATCH COMPLETE' | tee -a os_level_before_2018Q1_patching
+  EOH
+end
+
+# Log current server state - after patching.
+bash 'uname' do
+  user 'root'
+  cwd '/patch_logs'
+  code <<-EOH
+  uname -a | tee -a os_level_before_2018Q1_patching
+  EOH
+end
+
+bash 'system-release' do
+  user 'root'
+  cwd '/patch_logs'
+  code <<-EOH
+  cat /etc/system-release | tee -a os_level_before_2018Q1_patching
+  EOH
+end
+
+# TODO: Reboot Server
+
+# TODO: Verify update - HOW DO I VERIFY? WHAT IS THE CRITERIA?
+
+# TODO: Rollback (if necessary)
+# yum history list
+# yum history undo <ID FROM LIST>
