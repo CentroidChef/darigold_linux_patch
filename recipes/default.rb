@@ -5,6 +5,7 @@
 # Copyright:: 2018, The Authors, All Rights Reserved.
 
 # Shutdown software services.
+include_recipe 'darigold_linux_patch::_shutdown_services'
 
 # Determine OS Version
 
