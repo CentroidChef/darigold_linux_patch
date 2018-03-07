@@ -5,11 +5,11 @@
 # yum history undo <ID FROM LIST>
 
 # Execute startup script as applmgr
-# execute 'startup service' do
-#   command '/home/applmgr/startapp.ssl.sh'
-#   user 'applmgr'
-#   ignore_failure true
-# end
+execute 'startup service' do
+  command '/home/applmgr/startapp.ssl.sh'
+  user 'applmgr'
+  ignore_failure true
+end
 
 # Delete file in chef_patch_run_state to maintain state of chef run after reboot.
 file "#{node['linux_patching']['run_state_directory']}/#{node['linux_patching']['run_state_reboot']}" do
