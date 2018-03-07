@@ -1,11 +1,11 @@
 # TODO: Determine OS Version
 
 # Execute shutdown script as applmgr
-# execute 'shutdown service' do
-#   command '/home/applmgr/stopapp.ssl.sh'
-#   user 'applmgr'
-#   ignore_failure true
-# end
+execute 'shutdown service' do
+  command '/home/applmgr/stopapp.ssl.sh'
+  user 'applmgr'
+  ignore_failure true
+end
 
 # TODO: Utilize proper exit codes for script above.
 
@@ -27,28 +27,28 @@ bash 'system-release' do
 end
 
 # Yum clean all
-# bash 'yum_clean_all' do
-#   user 'root'
-#   code <<-EOH
-#   yum clean all
-#   EOH
-# end
-#
-# # Yum repolist
-# bash 'yum_repolist' do
-#   user 'root'
-#   code <<-EOH
-#   yum repolist
-#   EOH
-# end
-#
-# # Yum update
-# bash 'yum_update' do
-#   user 'root'
-#   code <<-EOH
-#   yum update -y --exclude=kexec-tools* --exclude=system-config-kdump*
-#   EOH
-# end
+bash 'yum_clean_all' do
+  user 'root'
+  code <<-EOH
+  yum clean all
+  EOH
+end
+
+# Yum repolist
+bash 'yum_repolist' do
+  user 'root'
+  code <<-EOH
+  yum repolist
+  EOH
+end
+
+# Yum update
+bash 'yum_update' do
+  user 'root'
+  code <<-EOH
+  yum update -y --exclude=kexec-tools* --exclude=system-config-kdump*
+  EOH
+end
 
 # Log post update
 bash 'system-release' do
@@ -76,5 +76,6 @@ end
 # Reboot Server
 reboot 'Rebooting to use new patch' do
   reason 'Need to reboot after applying linux patch'
-  action :reboot_now
+  action :request_reboot
+  delay_mins 1
 end
